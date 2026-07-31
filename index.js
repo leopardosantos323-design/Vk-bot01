@@ -26,7 +26,7 @@ const commands = [
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
-client.once("clientReady", async (c) => {
+client.once("Ready", async (c) => {
   console.log(`Bot online! Logado como: ${c.user.tag}`);
   c.user.setPresence({ status: "online", activities: [{ name: "Online 🟢", type: ActivityType.Custom }] });
   try {

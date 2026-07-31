@@ -1,5 +1,5 @@
 const {
-  Client,
+  Clientready,
   GatewayIntentBits,
   ActivityType,
   REST,

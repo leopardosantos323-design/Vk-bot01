@@ -9,8 +9,8 @@ import {
   ActivityType,
 } from "discord.js";
 
-const token = process.env.DISCORD_BOT_TOKEN;
-if (!token) { console.error("DISCORD_BOT_TOKEN não definido!"); process.exit(1); }
+const token = process.env.DISCORD_TOKEN || process.env.DISCORD_BOT_TOKEN;
+if (!token) { console.error("❌ Token não encontrado! Defina DISCORD_TOKEN."); process.exit(1); }
 
 const db = {
   carteiras: {},
@@ -83,9 +83,13 @@ client.on("interactionCreate", async (interaction) => {
   const { commandName } = interaction;
   const user = interaction.user;
 
+  // Responde imediatamente — evita timeout de 3s
+  await interaction.deferReply().catch(() => null);
+
   try {
     if (commandName === "ping") {
-      return interaction.reply(`🏓 Pong! Latência: **${Date.now() - interaction.createdTimestamp}ms**`);
+      const latencia = Date.now() - interaction.createdTimestamp;
+      return interaction.editReply(`🏓 Pong! Latência: **${latencia}ms** | API: **${Math.round(client.ws.ping)}ms**`);
     }
     if (commandName === "ajuda") {
       const embed = new EmbedBuilder().setTitle("📋 Comandos disponíveis").setColor(0x5865f2)
@@ -94,7 +98,7 @@ client.on("interactionCreate", async (interaction) => {
           { name: "💰 Economia", value: "/carteira • /loja • /comprar • /inventario • /transferir • /saldo-top • /dar-coins" },
           { name: "📊 Social", value: "/perfil • /nivel • /avaliar • /avaliacoes • /reputacao" }
         ).setFooter({ text: "Bot sempre online 24/7 🟢" });
-      return interaction.reply({ embeds: [embed] });
+      return interaction.editReply({ embeds: [embed] });
     }
     if (commandName === "info") {
       const alvo = interaction.options.getUser("usuario") ?? user;
@@ -106,7 +110,7 @@ client.on("interactionCreate", async (interaction) => {
           { name: "Conta criada", value: alvo.createdAt.toLocaleDateString("pt-BR"), inline: true },
           { name: "Entrou no servidor", value: member?.joinedAt?.toLocaleDateString("pt-BR") ?? "N/A", inline: true }
         ).setTimestamp();
-      return interaction.reply({ embeds: [embed] });
+      return interaction.editReply({ embeds: [embed] });
     }
     if (commandName === "servidor") {
       const g = interaction.guild;
@@ -117,93 +121,93 @@ client.on("interactionCreate", async (interaction) => {
           { name: "Criado em", value: g.createdAt.toLocaleDateString("pt-BR"), inline: true },
           { name: "Dono", value: `<@${g.ownerId}>`, inline: true }
         ).setTimestamp();
-      return interaction.reply({ embeds: [embed] });
+      return interaction.editReply({ embeds: [embed] });
     }
     if (commandName === "oi") {
       const respostas = [`Salve, ${user.displayName}! 👋`, `Eae ${user.displayName}! 😎`, `Oi ${user.displayName}! 🙌`, `Fala ${user.displayName}! 🤙`];
-      return interaction.reply(respostas[Math.floor(Math.random() * respostas.length)]);
+      return interaction.editReply(respostas[Math.floor(Math.random() * respostas.length)]);
     }
     if (commandName === "dado") {
-      return interaction.reply(`🎲 Você tirou: **${Math.floor(Math.random() * 6) + 1}**`);
+      return interaction.editReply(`🎲 Você tirou: **${Math.floor(Math.random() * 6) + 1}**`);
     }
     if (commandName === "cara-ou-coroa") {
-      return interaction.reply(Math.random() < 0.5 ? "🪙 **Cara!**" : "🪙 **Coroa!**");
+      return interaction.editReply(Math.random() < 0.5 ? "🪙 **Cara!**" : "🪙 **Coroa!**");
     }
     if (commandName === "loja") {
       const embed = new EmbedBuilder().setTitle("🏪 Loja").setColor(0xffd700)
         .setDescription(LOJA_ITENS.map(i => `${i.nome} — **${i.preco} moedas**\n> ${i.descricao}`).join("\n\n"));
-      return interaction.reply({ embeds: [embed] });
+      return interaction.editReply({ embeds: [embed] });
     }
     if (commandName === "comprar") {
       const itemId = interaction.options.getString("item");
       const item = LOJA_ITENS.find(i => i.id === itemId);
-      if (!item) return interaction.reply({ content: "❌ Item não encontrado.", ephemeral: true });
+      if (!item) return interaction.editReply("❌ Item não encontrado.");
       const saldo = getSaldo(user.id);
-      if (saldo < item.preco) return interaction.reply({ content: `❌ Saldo insuficiente! Você tem **${saldo} moedas** e o item custa **${item.preco} moedas**.`, ephemeral: true });
+      if (saldo < item.preco) return interaction.editReply(`❌ Saldo insuficiente! Você tem **${saldo} moedas** e o item custa **${item.preco} moedas**.`);
       setSaldo(user.id, saldo - item.preco);
       getInv(user.id).push({ id: item.id, nome: item.nome });
       addXP(user.id, 20);
-      return interaction.reply({ embeds: [new EmbedBuilder().setTitle("✅ Compra realizada!").setColor(0x00ff88)
+      return interaction.editReply({ embeds: [new EmbedBuilder().setTitle("✅ Compra realizada!").setColor(0x00ff88)
         .addFields({ name: "Item", value: item.nome, inline: true }, { name: "Pago", value: `${item.preco} moedas`, inline: true }, { name: "Saldo restante", value: `${getSaldo(user.id)} moedas`, inline: true }).setTimestamp()] });
     }
     if (commandName === "inventario") {
       const inv = getInv(user.id);
-      return interaction.reply({ embeds: [new EmbedBuilder().setTitle(`🎒 Inventário de ${user.username}`).setColor(0x5865f2)
+      return interaction.editReply({ embeds: [new EmbedBuilder().setTitle(`🎒 Inventário de ${user.username}`).setColor(0x5865f2)
         .setDescription(inv.length ? inv.map(i => `• ${i.nome}`).join("\n") : "Inventário vazio! Use `/loja` para comprar itens.").setTimestamp()] });
     }
     if (commandName === "carteira") {
-      return interaction.reply({ embeds: [new EmbedBuilder().setTitle(`💰 Carteira de ${user.username}`).setColor(0xffd700)
+      return interaction.editReply({ embeds: [new EmbedBuilder().setTitle(`💰 Carteira de ${user.username}`).setColor(0xffd700)
         .addFields({ name: "Saldo", value: `${getSaldo(user.id)} moedas` }).setTimestamp()] });
     }
     if (commandName === "dar-coins") {
       const alvo = interaction.options.getUser("usuario");
       const qtd = interaction.options.getInteger("quantia");
       setSaldo(alvo.id, getSaldo(alvo.id) + qtd);
-      return interaction.reply({ embeds: [new EmbedBuilder().setTitle("💸 Moedas enviadas!").setColor(0x00ff88)
+      return interaction.editReply({ embeds: [new EmbedBuilder().setTitle("💸 Moedas enviadas!").setColor(0x00ff88)
         .addFields({ name: "Usuário", value: alvo.username, inline: true }, { name: "Quantia", value: `${qtd} moedas`, inline: true }, { name: "Saldo atual", value: `${getSaldo(alvo.id)} moedas`, inline: true }).setTimestamp()] });
     }
     if (commandName === "transferir") {
       const alvo = interaction.options.getUser("usuario");
       const qtd = interaction.options.getInteger("quantia");
-      if (alvo.id === user.id) return interaction.reply({ content: "❌ Você não pode transferir para si mesmo!", ephemeral: true });
-      if (getSaldo(user.id) < qtd) return interaction.reply({ content: `❌ Saldo insuficiente! Você tem **${getSaldo(user.id)} moedas**.`, ephemeral: true });
+      if (alvo.id === user.id) return interaction.editReply("❌ Você não pode transferir para si mesmo!");
+      if (getSaldo(user.id) < qtd) return interaction.editReply(`❌ Saldo insuficiente! Você tem **${getSaldo(user.id)} moedas**.`);
       setSaldo(user.id, getSaldo(user.id) - qtd);
       setSaldo(alvo.id, getSaldo(alvo.id) + qtd);
-      return interaction.reply({ embeds: [new EmbedBuilder().setTitle("💳 Transferência realizada!").setColor(0x00ff88)
+      return interaction.editReply({ embeds: [new EmbedBuilder().setTitle("💳 Transferência realizada!").setColor(0x00ff88)
         .addFields({ name: "Para", value: alvo.username, inline: true }, { name: "Quantia", value: `${qtd} moedas`, inline: true }, { name: "Seu saldo", value: `${getSaldo(user.id)} moedas`, inline: true }).setTimestamp()] });
     }
     if (commandName === "saldo-top") {
       const ranking = Object.entries(db.carteiras).sort((a, b) => b[1] - a[1]).slice(0, 10);
       const desc = ranking.length ? ranking.map(([id, saldo], i) => `**${i + 1}.** <@${id}> — ${saldo} moedas`).join("\n") : "Nenhum usuário ainda.";
-      return interaction.reply({ embeds: [new EmbedBuilder().setTitle("🏆 Ranking de Moedas").setColor(0xffd700).setDescription(desc).setTimestamp()] });
+      return interaction.editReply({ embeds: [new EmbedBuilder().setTitle("🏆 Ranking de Moedas").setColor(0xffd700).setDescription(desc).setTimestamp()] });
     }
     if (commandName === "avaliar") {
       const alvo = interaction.options.getUser("usuario");
       const estrelas = interaction.options.getInteger("estrelas");
       const comentario = interaction.options.getString("comentario") ?? "Sem comentário";
-      if (alvo.id === user.id) return interaction.reply({ content: "❌ Você não pode se avaliar!", ephemeral: true });
+      if (alvo.id === user.id) return interaction.editReply("❌ Você não pode se avaliar!");
       if (!db.avaliacoes[alvo.id]) db.avaliacoes[alvo.id] = [];
       db.avaliacoes[alvo.id].push({ avaliadorTag: user.username, estrelas, comentario, data: new Date().toLocaleDateString("pt-BR") });
-      return interaction.reply({ embeds: [new EmbedBuilder().setTitle("⭐ Avaliação registrada!").setColor(0xffd700)
+      return interaction.editReply({ embeds: [new EmbedBuilder().setTitle("⭐ Avaliação registrada!").setColor(0xffd700)
         .addFields({ name: "Usuário", value: alvo.username, inline: true }, { name: "Nota", value: "⭐".repeat(estrelas), inline: true }, { name: "Comentário", value: comentario }).setTimestamp()] });
     }
     if (commandName === "avaliacoes") {
       const alvo = interaction.options.getUser("usuario");
       const avs = db.avaliacoes[alvo.id] ?? [];
-      if (!avs.length) return interaction.reply({ content: `❌ **${alvo.username}** ainda não tem avaliações.`, ephemeral: true });
+      if (!avs.length) return interaction.editReply(`❌ **${alvo.username}** ainda não tem avaliações.`);
       const media = (avs.reduce((a, b) => a + b.estrelas, 0) / avs.length).toFixed(1);
-      return interaction.reply({ embeds: [new EmbedBuilder().setTitle(`📊 Avaliações de ${alvo.username}`).setColor(0xffd700)
+      return interaction.editReply({ embeds: [new EmbedBuilder().setTitle(`📊 Avaliações de ${alvo.username}`).setColor(0xffd700)
         .setDescription(avs.slice(-5).map(a => `⭐ ${a.estrelas}/5 — **${a.avaliadorTag}**\n> ${a.comentario}\n> 📅 ${a.data}`).join("\n\n"))
         .addFields({ name: "Média geral", value: `⭐ ${media}/5 (${avs.length} avaliações)` }).setTimestamp()] });
     }
     if (commandName === "reputacao") {
       const alvo = interaction.options.getUser("usuario");
-      if (alvo.id === user.id) return interaction.reply({ content: "❌ Você não pode dar reputação para si mesmo!", ephemeral: true });
+      if (alvo.id === user.id) return interaction.editReply("❌ Você não pode dar reputação para si mesmo!");
       const rep = getRep(alvo.id);
-      if (rep.quemDeu.has(user.id)) return interaction.reply({ content: "❌ Você já deu reputação para este usuário!", ephemeral: true });
+      if (rep.quemDeu.has(user.id)) return interaction.editReply("❌ Você já deu reputação para este usuário!");
       rep.quemDeu.add(user.id);
       rep.total += 1;
-      return interaction.reply({ embeds: [new EmbedBuilder().setTitle("🌟 Reputação adicionada!").setColor(0xffd700)
+      return interaction.editReply({ embeds: [new EmbedBuilder().setTitle("🌟 Reputação adicionada!").setColor(0xffd700)
         .addFields({ name: "Usuário", value: alvo.username, inline: true }, { name: "Total de reputação", value: `${rep.total}`, inline: true }).setTimestamp()] });
     }
     if (commandName === "perfil") {
@@ -213,7 +217,7 @@ client.on("interactionCreate", async (interaction) => {
       const inv = getInv(alvo.id);
       const avs = db.avaliacoes[alvo.id] ?? [];
       const media = avs.length ? (avs.reduce((a, b) => a + b.estrelas, 0) / avs.length).toFixed(1) : "N/A";
-      return interaction.reply({ embeds: [new EmbedBuilder().setTitle(`👤 Perfil de ${alvo.username}`).setColor(0x5865f2)
+      return interaction.editReply({ embeds: [new EmbedBuilder().setTitle(`👤 Perfil de ${alvo.username}`).setColor(0x5865f2)
         .setThumbnail(alvo.displayAvatarURL())
         .addFields(
           { name: "💰 Saldo", value: `${getSaldo(alvo.id)} moedas`, inline: true },
@@ -228,7 +232,7 @@ client.on("interactionCreate", async (interaction) => {
       const xpNecessario = xp.nivel * 100;
       const progresso = Math.floor((xp.xp / xpNecessario) * 10);
       const barra = "█".repeat(progresso) + "░".repeat(10 - progresso);
-      return interaction.reply({ embeds: [new EmbedBuilder().setTitle(`📈 Nível de ${user.username}`).setColor(0x5865f2)
+      return interaction.editReply({ embeds: [new EmbedBuilder().setTitle(`📈 Nível de ${user.username}`).setColor(0x5865f2)
         .addFields(
           { name: "Nível", value: `${xp.nivel}`, inline: true },
           { name: "XP", value: `${xp.xp} / ${xpNecessario}`, inline: true },
@@ -236,12 +240,22 @@ client.on("interactionCreate", async (interaction) => {
         ).setTimestamp()] });
     }
   } catch (err) {
-    console.error(`Erro no comando ${commandName}:`, err);
-    if (!interaction.replied && !interaction.deferred) {
-      await interaction.reply({ content: "❌ Ocorreu um erro ao executar este comando.", ephemeral: true }).catch(() => null);
-    }
+    console.error(`❌ Erro no comando /${commandName}:`, err);
+    await interaction.editReply("❌ Ocorreu um erro ao executar este comando.").catch(() => null);
   }
 });
 
-client.on("error", (err) => console.error("Erro no bot:", err));
-client.login(token).catch((err) => { console.error("Falha ao conectar:", err); process.exit(1); });
+// Anti-crash global
+process.on("unhandledRejection", (err) => console.error("❌ UnhandledRejection:", err));
+process.on("uncaughtException",  (err) => console.error("❌ UncaughtException:", err));
+
+client.on("error", (err) => console.error("❌ Erro no client:", err));
+
+client.on("shardDisconnect", (e, id) => console.warn(`⚠️ Shard ${id} desconectou. Reconectando...`));
+client.on("shardReconnecting", (id) => console.log(`🔄 Shard ${id} reconectando...`));
+client.on("shardResume", (id, n) => console.log(`✅ Shard ${id} reconectou (${n} eventos).`));
+
+client.login(token).catch((err) => {
+  console.error("❌ Falha ao conectar:", err.message);
+  setTimeout(() => client.login(token).catch(console.error), 10_000);
+});

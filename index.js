@@ -100,9 +100,6 @@ new SlashCommandBuilder().setName("fecharticket").setDescription("🔒 Fechar o 
 new SlashCommandBuilder().setName("assumirticket").setDescription("✋ Assumir o ticket atual"),
 new SlashCommandBuilder().setName("adicionarticket").setDescription("➕ Adicionar usuário ao ticket").addUserOption(o => o.setName("usuario").setDescription("Usuário").setRequired(true)),
 ];
-
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
-
 client.once("ready", async (c) => {
 console.log(✅ Bot online! Logado como: ${c.user.tag});
 c.user.setPresence({ status: "online", activities: [{ name: "Online 🟢", type: ActivityType.Custom }] });

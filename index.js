@@ -52,17 +52,18 @@ if (db.stock.length === 0) { embed.setDescription("❌ Sem itens em stock no mom
 else {
 const por = {};
 for (const i of db.stock) { const c = i.categoria || "Geral"; if (!por[c]) por[c] = []; por[c].push(i); }
-for (const [cat, items] of Object.entries(por)) embed.addFields({ name: 📂 ${cat}, value: items.map(i => ${i.emoji || "📦"} **${i.nome}** — 💰 ${i.preco} moedas | 📦 ${i.quantidade} un.\n> ${i.descricao}).join("\n") });
-}
-await canal.send({ embeds: [embed] });
-} catch (err) { console.error("❌ Erro ao notificar stock:", err.message); }
+}for (const [cat, items] of Object.entries(por)) {
+  embed.addFields({
+    name: `📂 ${cat}`,
+    value: items
+      .map(i => `${i.emoji || "📦"} **${i.nome}** — 💰 ${i.preco} moedas | 📦 ${i.quantidade} un.\n> ${i.descricao}`)
+      .join("\n")
+  });
 }
 
-async function gerarTranscript(canal) {
-try {
-const msgs = await canal.messages.fetch({ limit: 100 });
-return [...msgs.values()].reverse().map(m => [${m.createdAt.toLocaleString("pt-BR")}] ${m.author.tag}: ${m.content || (m.embeds.length ? "[Embed]" : "[Arquivo]")}).join("\n");
-} catch { return "Não foi possível gerar o transcript."; }
+await canal.send({ embeds: [embed] });
+} catch (err) {
+  console.error("❌ Erro ao notificar stock:", err.message);
 }
 
 const commands = [

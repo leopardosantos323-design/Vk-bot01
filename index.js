@@ -109,9 +109,7 @@ await rest.put(Routes.applicationCommands(c.user.id), { body: commands.map(cmd =
 } catch (err) { console.error("❌ Erro ao registrar comandos:", err); }
 });
 console.log(`✅ ${commands.length} comandos registrados!`);
-} catch (err) {
-  console.error("❌ Erro ao registrar comandos:", err);
-}
+
 });
 async function criarCanalTicket(guild, user, assunto, categoria) {
 db.ticketContador++;

@@ -108,8 +108,11 @@ const rest = new REST({ version: "10" }).setToken(token);
 await rest.put(Routes.applicationCommands(c.user.id), { body: commands.map(cmd => cmd.toJSON()) });
 } catch (err) { console.error("❌ Erro ao registrar comandos:", err); }
 });
-console.log(✅ ${commands.length} comandos registrados!);
-
+console.log(`✅ ${commands.length} comandos registrados!`);
+} catch (err) {
+  console.error("❌ Erro ao registrar comandos:", err);
+}
+});
 async function criarCanalTicket(guild, user, assunto, categoria) {
 db.ticketContador++;
 const numero = String(db.ticketContador).padStart(4, "0");

@@ -106,9 +106,9 @@ c.user.setPresence({ status: "online", activities: [{ name: "Online 🟢", type:
 try {
 const rest = new REST({ version: "10" }).setToken(token);
 await rest.put(Routes.applicationCommands(c.user.id), { body: commands.map(cmd => cmd.toJSON()) });
-console.log(✅ ${commands.length} comandos registrados!);
 } catch (err) { console.error("❌ Erro ao registrar comandos:", err); }
 });
+console.log(✅ ${commands.length} comandos registrados!);
 
 async function criarCanalTicket(guild, user, assunto, categoria) {
 db.ticketContador++;

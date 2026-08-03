@@ -101,7 +101,7 @@ new SlashCommandBuilder().setName("assumirticket").setDescription("✋ Assumir o
 new SlashCommandBuilder().setName("adicionarticket").setDescription("➕ Adicionar usuário ao ticket").addUserOption(o => o.setName("usuario").setDescription("Usuário").setRequired(true)),
 ];
 client.once("ready", async (c) => {
-console.log(✅ Bot online! Logado como: ${c.user.tag});
+console.log(`✅ Bot online! Logado como: ${c.user.tag}`);
 c.user.setPresence({ status: "online", activities: [{ name: "Online 🟢", type: ActivityType.Custom }] });
 try {
 const rest = new REST({ version: "10" }).setToken(token);

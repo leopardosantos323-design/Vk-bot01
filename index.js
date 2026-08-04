@@ -154,47 +154,6 @@ o
 new SlashCommandBuilder()
 .setName("dar-coins")
 .setDescription("Dar moedas")
-.addUserOption(o =>
-o
-.setName("usuario")
-.setRequired(true)
-)
-.addIntegerOption(o =>
-o
-.setName("quantia")
-.setRequired(true)
-)
-.setDefaultMemberPermissions(
-PermissionFlagsBits.Administrator
-),
-
-new SlashCommandBuilder()
-.setName("transferir")
-.setDescription("Transferir moedas")
-.addUserOption(o =>
-o
-.setName("usuario")
-.setRequired(true)
-)
-.addIntegerOption(o =>
-o
-.setName("quantia")
-.setRequired(true)
-),
-
-new SlashCommandBuilder()
-.setName("saldo-top")
-.setDescription("Ranking"),
-
-new SlashCommandBuilder()
-.setName("stock")
-.setDescription("Mostrar stock"),
-
-new SlashCommandBuilder()
-.setName("ticket")
-.setDescription("Abrir ticket")
-
-];export async function executeCommand(interaction, client, command) {
 
 const name = interaction.commandName;
 

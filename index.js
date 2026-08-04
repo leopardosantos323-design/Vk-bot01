@@ -150,7 +150,7 @@ o
 .setDescription("Item")
 .setRequired(true)
 ),
-export const commands = [
+const commands = [
 
   new SlashCommandBuilder()
     .setName("ping")

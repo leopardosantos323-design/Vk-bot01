@@ -2,9 +2,9 @@
   "name": "vk-bot01",
   "version": "1.0.0",
   "type": "module",
-  "main": "index.js",
+  "main": "bot.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node bot.js"
   },
   "dependencies": {
     "discord.js": "^14.21.0"

@@ -107,7 +107,6 @@ function reputacao(id) {
 }
 
 export const commands = [
-const commands = [
 new SlashCommandBuilder()
 .setName("ping")
 .setDescription("Ver latência"),

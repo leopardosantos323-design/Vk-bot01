@@ -298,10 +298,9 @@ o
        .setRequired(true)
     )
 
-];
 new SlashCommandBuilder()
-.setName("dar-coins")
-.setDescription("Dar moedas")
+  .setName("dar-coins")
+  .setDescription("Dar moedas"),];
 
 const name = interaction.commandName;
 

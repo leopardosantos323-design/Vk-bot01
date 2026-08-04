@@ -150,7 +150,158 @@ o
 .setDescription("Item")
 .setRequired(true)
 ),
+export const commands = [
 
+  new SlashCommandBuilder()
+    .setName("ping")
+    .setDescription("Ver latência"),
+
+  new SlashCommandBuilder()
+    .setName("ajuda")
+    .setDescription("Lista comandos"),
+
+  new SlashCommandBuilder()
+    .setName("perfil")
+    .setDescription("Perfil")
+    .addUserOption(o =>
+      o.setName("usuario")
+       .setDescription("Usuário")
+    ),
+
+  new SlashCommandBuilder()
+    .setName("carteira")
+    .setDescription("Mostrar saldo"),
+
+  new SlashCommandBuilder()
+    .setName("nivel")
+    .setDescription("Mostrar nível"),
+
+  new SlashCommandBuilder()
+    .setName("inventario")
+    .setDescription("Mostrar inventário"),
+
+  new SlashCommandBuilder()
+    .setName("loja")
+    .setDescription("Mostrar loja"),
+
+  new SlashCommandBuilder()
+    .setName("comprar")
+    .setDescription("Comprar item")
+    .addStringOption(o =>
+      o.setName("item")
+       .setDescription("Item")
+       .setRequired(true)
+    ),
+
+  new SlashCommandBuilder()
+    .setName("dar-coins")
+    .setDescription("Dar moedas")
+    .addUserOption(o =>
+      o.setName("usuario")
+       .setDescription("Usuário")
+       .setRequired(true)
+    )
+    .addIntegerOption(o =>
+      o.setName("quantia")
+       .setDescription("Quantidade")
+       .setRequired(true)
+    )
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+
+  new SlashCommandBuilder()
+    .setName("transferir")
+    .setDescription("Transferir moedas")
+    .addUserOption(o =>
+      o.setName("usuario")
+       .setDescription("Usuário")
+       .setRequired(true)
+    )
+    .addIntegerOption(o =>
+      o.setName("quantia")
+       .setDescription("Quantidade")
+       .setRequired(true)
+    ),
+
+  new SlashCommandBuilder()
+    .setName("saldo-top")
+    .setDescription("Ranking"),
+
+  new SlashCommandBuilder()
+    .setName("stock")
+    .setDescription("Mostrar stock"),
+
+  new SlashCommandBuilder()
+    .setName("addstock")
+    .setDescription("Adicionar item ao estoque")
+    .addStringOption(o => o.setName("nome").setDescription("Nome").setRequired(true))
+    .addIntegerOption(o => o.setName("preco").setDescription("Preço").setRequired(true))
+    .addIntegerOption(o => o.setName("quantidade").setDescription("Quantidade").setRequired(true))
+    .addStringOption(o => o.setName("categoria").setDescription("Categoria"))
+    .addStringOption(o => o.setName("descricao").setDescription("Descrição"))
+    .addStringOption(o => o.setName("emoji").setDescription("Emoji")),
+
+  new SlashCommandBuilder()
+    .setName("editstock")
+    .setDescription("Editar item")
+    .addStringOption(o => o.setName("nome").setDescription("Nome").setRequired(true))
+    .addIntegerOption(o => o.setName("preco").setDescription("Preço"))
+    .addIntegerOption(o => o.setName("quantidade").setDescription("Quantidade")),
+
+  new SlashCommandBuilder()
+    .setName("removestock")
+    .setDescription("Remover item")
+    .addStringOption(o => o.setName("nome").setDescription("Nome").setRequired(true)),
+
+  new SlashCommandBuilder()
+    .setName("setcanal-stock")
+    .setDescription("Definir canal do estoque")
+    .addChannelOption(o => o.setName("canal").setDescription("Canal").setRequired(true)),
+
+  new SlashCommandBuilder()
+    .setName("configurarpagamento")
+    .setDescription("Configurar pagamento")
+    .addStringOption(o => o.setName("tipo").setDescription("Tipo").setRequired(true))
+    .addStringOption(o => o.setName("titular").setDescription("Titular").setRequired(true))
+    .addStringOption(o => o.setName("chave").setDescription("Chave").setRequired(true))
+    .addStringOption(o => o.setName("info").setDescription("Informações")),
+
+  new SlashCommandBuilder()
+    .setName("pagamento")
+    .setDescription("Mostrar pagamento"),
+
+  new SlashCommandBuilder()
+    .setName("configurarticket")
+    .setDescription("Configurar tickets")
+    .addChannelOption(o => o.setName("categoria").setDescription("Categoria").setRequired(true))
+    .addRoleOption(o => o.setName("cargo-suporte").setDescription("Cargo").setRequired(true))
+    .addChannelOption(o => o.setName("log").setDescription("Canal de log")),
+
+  new SlashCommandBuilder()
+    .setName("painel-ticket")
+    .setDescription("Enviar painel"),
+
+  new SlashCommandBuilder()
+    .setName("ticket")
+    .setDescription("Abrir ticket"),
+
+  new SlashCommandBuilder()
+    .setName("fecharticket")
+    .setDescription("Fechar ticket"),
+
+  new SlashCommandBuilder()
+    .setName("assumirticket")
+    .setDescription("Assumir ticket"),
+
+  new SlashCommandBuilder()
+    .setName("adicionarticket")
+    .setDescription("Adicionar usuário")
+    .addUserOption(o =>
+      o.setName("usuario")
+       .setDescription("Usuário")
+       .setRequired(true)
+    )
+
+];
 new SlashCommandBuilder()
 .setName("dar-coins")
 .setDescription("Dar moedas")

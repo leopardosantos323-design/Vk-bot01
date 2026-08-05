@@ -635,6 +635,6 @@ process.on('uncaughtException', (err) => {
   console.error('[VKBot] uncaughtException:', err);
 });
 
-const http = require('htt **…**
+const http = require('http');
 
 _This response is too long to display in full._

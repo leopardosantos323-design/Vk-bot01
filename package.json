@@ -1,7 +1,7 @@
 {
   "name": "vkbot",
   "version": "1.0.0",
-  "description": "VK Bot - Discord Bot completo",
+  "description": "VKBot Discord",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
@@ -10,8 +10,8 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
-    "discord.js": "^14.16.3",
-    "better-sqlite3": "^9.6.0",
+    "better-sqlite3": "^9.4.3",
+    "discord.js": "^14.14.1",
     "dotenv": "^16.4.5"
   }
 }

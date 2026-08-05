@@ -726,7 +726,44 @@ client.on(Events.MessageCreate, async (msg) => {
   }
 });
 
-// ── Login ─────────────────────────────────────────────────────────────────────
-const token = process.env.DISCORD_TOKEN;
-if (!token) { console.error('❌ DISCORD_TOKEN não definido!'); process.exit(1); }
-client.login(token).catch(err => { console.error('❌ Falha ao conectar:', err.message); process.exit(1); });
+// ── Proteção contra crashes ───────────────────────────────────────────────────
+process.on('unhandledRejection', (reason) => {
+  console.error('[VKBot] unhandledRejection:', reason);
+});
+process.on('uncaughtException', (err) => {
+  console.error('[VKBot] uncaughtException:', err);
+});
+
+// ── Keep-alive HTTP (Railway exige porta aberta) ──────────────────────────────
+const http = require('http');
+const PORT = process.env.PORT || 3000;
+http.createServer((req, res) => {
+  res.writeHead(200);
+  res.end('VKBot online\n');
+}).listen(PORT, () => {
+  console.log(`[VKBot] Keep-alive rodando na porta ${PORT}`);
+});
+
+// ── Proteção contra crashes ───────────────────────────────────────────────────
+process.on('unhandledRejection', (reason) => {
+  console.error('[VKBot] unhandledRejection:', reason);
+});
+process.on('uncaughtException', (err) => {
+  console.error('[VKBot] uncaughtException:', err);
+});
+
+// ── Keep-alive HTTP (Railway exige porta aberta) ──────────────────────────────
+const http = require('http');
+const PORT = process.env.PORT || 3000;
+http.createServer((req, res) => {
+  res.writeHead(200);
+  res.end('VKBot online\n');
+}).listen(PORT, () => {
+  console.log(`[VKBot] Keep-alive rodando na porta ${PORT}`);
+});
+
+// ── Iniciar ───────────────────────────────────────────────────────────────────
+client.login(process.env.BOT_TOKEN).catch(err => {
+  console.error('[VKBot] Falha ao logar:', err.message);
+  process.exit(1);
+});
